@@ -89,7 +89,7 @@ private LoadListItems(): void{
     }); 
   }
   else{
-    let url: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('全エンジニアリスト')/items?$filter=OData__x6240__x5c5e__x4f1a__x793e_ eq '${location.pathname.split("/")[4].replace(".aspx","")}' and (OData__x5951__x7d04__x5f62__x614b_%20eq%20null%20or%20OData__x5951__x7d04__x5f62__x614b_%20eq%20%27待機%27)`;  
+    let url: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('全エンジニアリスト')/items?$filter=OData__x6240__x5c5e__x4f1a__x793e_ eq '${location.pathname.split("/")[4].replace(".aspx","")}'`;  
     this.GetListItems(url).then((response)=>{  
       if(!response.value)
       {
@@ -108,32 +108,24 @@ private GetListItems(url: string): Promise<spListItems>{
   }  
 
  private RenderListItems(items: spListItem[]): void{  
-    let html: string = '<table>';
-    html += `<th>会社名</th><th>名前</th><th>提案額</th><th>契約更新日</th><th>管理営業</th>`;
-    let data = new Date();
-    let y_now : Number = data.getFullYear();
-    let m_now : Number　= data.getMonth()+1;
-    let d_now : Number　= data.getDate();
-    let y : Number;
-    let m : Number;
-    let d : Number;
+  let html: string = '<table>';
+  html += `<th>会社名</th><th>名前</th><th>提案額</th><th>契約更新日</th><th>管理営業</th>`;
+  let data = new Date();
+  let y_now : Number = data.getFullYear();
+  let m_now : Number　= data.getMonth()+1;
+  let d_now : Number　= data.getDate();
+  let y : Number;
+  let m : Number;
+  let d : Number;
 
-    items.forEach((item: spListItem) => {
-    let tempdate = item.OData__x5951__x7d04__x66f4__x65b0__x65
-    if (tempdate == null){
-    html += `
-    <tr>
-      <td>${item.OData__x6240__x5c5e__x4f1a__x793e_}</td>
-      <td>${item.OData__x540d__x524d_1}</td>
-      <td> </td>
-      <td> </td>
-      <td>${item.OData__x7ba1__x7406__x55b6__x696d_}</td>
-    </tr>
-        `;
-    }
-    else{
+  items.forEach((item: spListItem) => {
+  let tempdate = item.OData__x5951__x7d04__x66f4__x65b0__x65;
+  let status = item.OData__x5951__x7d04__x5f62__x614b_;
+  if(tempdate == null){
+    tempdate = '';
+  }if(tempdate != null){
     tempdate = tempdate.split('T')[0].replace(/-/g,'/');
-    let status = item.OData__x5951__x7d04__x5f62__x614b_;
+  }
     if (status == '稼働中'){
       y = Number(tempdate.split('/')[0]);
       m = Number(tempdate.split('/')[1]);
@@ -141,13 +133,15 @@ private GetListItems(url: string): Promise<spListItems>{
 
       if (y <= y_now && m == m_now && d < d_now){
         status = '待機';
-        tempdate = '待機'
+        tempdate = '<span>' + tempdate + '</span>';
       }if (y <= y_now && m < m_now) {
         status = '待機';
-        tempdate = '待機'
+        tempdate = '<span>' + tempdate + '</span>';
       }
-    }
+      }
+
     if(status == '待機'){
+
       html += `
       <tr>
         <td>${item.OData__x6240__x5c5e__x4f1a__x793e_}</td>
@@ -158,8 +152,8 @@ private GetListItems(url: string): Promise<spListItems>{
       </tr>
       `;
     }
-    }
-    });
+
+  });
     html += `</table>`;
     this.domElement.querySelector('#spListContainer').innerHTML = html;
   }  
@@ -192,7 +186,9 @@ private GetListItems(url: string): Promise<spListItems>{
 
       let tempdate = item.OData__x5951__x7d04__x66f4__x65b0__x65;
       let status = item.OData__x5951__x7d04__x5f62__x614b_;
-      tempdate = tempdate.split('T')[0].replace(/-/g,'/');
+      if(tempdate != null){
+        tempdate = tempdate.split('T')[0].replace(/-/g,'/');
+      }
       if (status == '稼働中'){
         y = Number(tempdate.split('/')[0]);
         m = Number(tempdate.split('/')[1]);
@@ -200,39 +196,27 @@ private GetListItems(url: string): Promise<spListItems>{
 
         if (y <= y_now && m == m_now && d < d_now){
           status = '待機';
-          tempdate = '待機'
+          tempdate = '<span>' + tempdate + '</span>';
         }if (y <= y_now && m < m_now) {
           status = '待機';
-          tempdate = '待機'
+          tempdate = '<span>' + tempdate + '</span>';
         }
       }
       if(company.indexOf(item.OData__x6240__x5c5e__x4f1a__x793e_) < 0)
           {
             if(status == "null" || status == "待機"){
-            if (tempdate == null){
-                html += `
-                <tr>
-                  <td>${item.OData__x6240__x5c5e__x4f1a__x793e_}</td>
-                  <td>${item.OData__x540d__x524d_1}</td>
-                  <td> </td>
-                  <td> </td>
-                  <td>${item.OData__x7ba1__x7406__x55b6__x696d_}</td>
-                </tr>
-                    `;
-                }
-                else{
-                html += `
-                <tr>
+            
+              html += `
+              <tr>
                 <td>${item.OData__x6240__x5c5e__x4f1a__x793e_}</td>
                 <td>${item.OData__x540d__x524d_1}</td>
                 <td> </td>
                 <td>${tempdate}</td>
                 <td>${item.OData__x7ba1__x7406__x55b6__x696d_}</td>
-                </tr>
-                    `;
-                }
+              </tr>
+              `;
               }
-          }
+            }
     
     });
     html += `</table>`;
