@@ -35,14 +35,15 @@ export default class Test6 extends React.Component<ITest6Props, {}> {
                 data={data2}
             >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" interval="preserveStartEnd" />
-                <YAxis interval="preserveStartEnd" />
+                <XAxis dataKey="year" unit="年"/>
+                <YAxis />
                 <Legend />
                 <Tooltip // ツールチップの表示
-                labelFormatter={this.props.ResultData.data['year']}
+                labelFormatter={this.props.ResultData.data['year']
+                }
                 />
-                <Bar  dataKey="男性" fill="#8884d8" />
-                <Bar  dataKey="女性" fill="#82ca9d" />
+                <Bar  dataKey="男性" fill="#8884d8" unit="人"/>
+                <Bar  dataKey="女性" fill="#82ca9d" unit="人"/>
             </BarChart>
         
       </div>
